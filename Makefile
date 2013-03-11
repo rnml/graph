@@ -4,12 +4,12 @@
 PACKAGES=core
 SYNTAX=sexplib
 MODULES= std
-#MODULES= foo bar std
+#MODULES= file1 file2 std
 
-B=solvers
+B=foo
 T=$B.cmxa
 
-FOR_PACK_OPT=-for-pack Solvers
+FOR_PACK_OPT=-for-pack Foo
 
 ### RULES ##########################################################
 
