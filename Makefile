@@ -6,10 +6,10 @@ SYNTAX=sexplib
 MODULES= std
 #MODULES= file1 file2 std
 
-B= library_name
+B= graph
 T=$B.cmxa
 
-FOR_PACK_OPT=-for-pack Library_name
+FOR_PACK_OPT=-for-pack Graph
 
 ### RULES ##########################################################
 
