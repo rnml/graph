@@ -1,2 +1,1 @@
-(* module Foo = Foo
-   module Bar = Bar *)
+module Graph = Graph

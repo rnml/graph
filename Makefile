@@ -3,13 +3,12 @@
 
 PACKAGES=core
 SYNTAX=sexplib
-MODULES= std
-#MODULES= file1 file2 std
+MODULES=graph std
 
-B= graph
+B= graph_lib
 T=$B.cmxa
 
-FOR_PACK_OPT=-for-pack Graph
+FOR_PACK_OPT=-for-pack Graph_lib
 
 ### RULES ##########################################################
 
