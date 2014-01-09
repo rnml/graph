@@ -67,7 +67,10 @@ module Make (Vertex : Vertex) = struct
       outgoing = Vertex.Map.of_alist_multi outgoing;
     }
 
-  let transpose t = edges t |> List.map ~f:Edge.flip |> of_edges
+  let transpose t = {
+    incoming = t.outgoing;
+    outgoing = t.incoming;
+  }
 
   let outgoing t v : Vertex.t list = Option.value ~default:[] (Map.find t.outgoing v)
   let incoming t v : Vertex.t list = Option.value ~default:[] (Map.find t.incoming v)
