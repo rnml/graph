@@ -6,7 +6,8 @@ module type Vertex = sig
   include Hashable.S with type t := t
 end
 
-(* See "Lazy depth first search and Linear Graph Algorithms in Haskell"
+(* The algorithms here were lifted from
+   "Lazy depth first search and Linear Graph Algorithms in Haskell"
    by King and Launchbury *)
 
 module Make (Vertex : Vertex) = struct
