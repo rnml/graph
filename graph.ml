@@ -44,15 +44,15 @@ module Make (Vertex : Vertex) = struct
   end
 
   type t = {
-    outgoing : Vertex.t list Vertex.Map.t;
-    incoming : Vertex.t list Vertex.Map.t;
+    outgoing : Vertex.t list Vertex.Table.t;
+    incoming : Vertex.t list Vertex.Table.t;
   }
 
-  let vertices t = Map.keys t.outgoing
+  let vertices t = Hashtbl.keys t.outgoing
 
   let edges t =
     let open List.Monad_infix in
-    Map.to_alist t.outgoing >>= fun (src, dsts) ->
+    Hashtbl.to_alist t.outgoing >>= fun (src, dsts) ->
     dsts >>| fun dst ->
     {Edge.src; dst}
 
@@ -63,8 +63,8 @@ module Make (Vertex : Vertex) = struct
     let outgoing =
       List.map es ~f:(fun {Edge.src; dst} -> (dst, src))
     in
-    { incoming = Vertex.Map.of_alist_multi incoming;
-      outgoing = Vertex.Map.of_alist_multi outgoing;
+    { incoming = Vertex.Table.of_alist_multi incoming;
+      outgoing = Vertex.Table.of_alist_multi outgoing;
     }
 
   let transpose t = {
@@ -72,11 +72,11 @@ module Make (Vertex : Vertex) = struct
     outgoing = t.incoming;
   }
 
-  let outgoing t v = Option.value ~default:[] (Map.find t.outgoing v)
-  let incoming t v = Option.value ~default:[] (Map.find t.incoming v)
+  let outgoing t v = Option.value ~default:[] (Hashtbl.find t.outgoing v)
+  let incoming t v = Option.value ~default:[] (Hashtbl.find t.incoming v)
 
   let dfs t vs =
-    let visited = Vertex.Hash_set.create ~size:(Map.length t.outgoing) () in
+    let visited = Vertex.Hash_set.create ~size:(Hashtbl.length t.outgoing) () in
     let rec loop = function
       | [] -> []
       | v :: vs ->
