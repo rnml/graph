@@ -12,8 +12,11 @@ end
 module Make (Vertex : Vertex) = struct
 
   module Edge = struct
-    type t = Vertex.t * Vertex.t
-    let flip (v, w) = (w, v)
+    type t = {
+      src : Vertex.t;
+      dst : Vertex.t;
+    }
+    let flip {src; dst} = {src = dst; dst = src}
   end
 
   module rec Tree : sig
@@ -46,9 +49,13 @@ module Make (Vertex : Vertex) = struct
 
   let edges t =
     let open List.Monad_infix in
-    Map.to_alist t >>= fun (v, ws) -> ws >>| fun w -> (v, w)
+    Map.to_alist t >>= fun (src, dsts) ->
+    dsts >>| fun dst ->
+    {Edge.src; dst}
 
-  let of_edges es = Vertex.Map.of_alist_multi es
+  let of_edges es =
+    List.map es ~f:(fun {Edge.src; dst} -> (src, dst))
+    |> Vertex.Map.of_alist_multi
 
   let transpose t = edges t |> List.map ~f:Edge.flip |> of_edges
 
