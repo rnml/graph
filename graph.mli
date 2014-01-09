@@ -27,8 +27,13 @@ module Make (Vertex : Vertex) : sig
   (* flip all the edges in a graph *)
   val transpose : t -> t
 
-  (* [List.mem (outgoing g v) w] iff there is an edge from [v] to [w] in [g] *)
+  (* [List.mem (outgoing graph src) dst] iff there is an edge from [src] to [dst] in
+     [graph] *)
   val outgoing : t -> Vertex.t -> Vertex.t list
+
+  (* [List.mem (outgoing graph dst) src] iff there is an edge from [src] to [dst] in
+     [graph] *)
+  val incoming : t -> Vertex.t -> Vertex.t list
 
   module rec Tree : sig
     type 'a t = Node of 'a * 'a Forest.t

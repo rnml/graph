@@ -43,26 +43,37 @@ module Make (Vertex : Vertex) = struct
     let post_order ts = post_order_aux ts []
   end
 
-  type t = Vertex.t list Vertex.Map.t
+  type t = {
+    outgoing : Vertex.t list Vertex.Map.t;
+    incoming : Vertex.t list Vertex.Map.t;
+  }
 
-  let vertices = Map.keys
+  let vertices (t : t) : Vertex.t list = Map.keys t.outgoing
 
   let edges t =
     let open List.Monad_infix in
-    Map.to_alist t >>= fun (src, dsts) ->
+    Map.to_alist t.outgoing >>= fun (src, dsts) ->
     dsts >>| fun dst ->
     {Edge.src; dst}
 
   let of_edges es =
-    List.map es ~f:(fun {Edge.src; dst} -> (src, dst))
-    |> Vertex.Map.of_alist_multi
+    let incoming =
+      List.map es ~f:(fun {Edge.src; dst} -> (src, dst))
+    in
+    let outgoing =
+      List.map es ~f:(fun {Edge.src; dst} -> (dst, src))
+    in
+    { incoming = Vertex.Map.of_alist_multi incoming;
+      outgoing = Vertex.Map.of_alist_multi outgoing;
+    }
 
   let transpose t = edges t |> List.map ~f:Edge.flip |> of_edges
 
-  let outgoing t v = Option.value ~default:[] (Map.find t v)
+  let outgoing t v : Vertex.t list = Option.value ~default:[] (Map.find t.outgoing v)
+  let incoming t v : Vertex.t list = Option.value ~default:[] (Map.find t.incoming v)
 
-  let dfs t vs =
-    let visited = Vertex.Hash_set.create ~size:(Map.length t) () in
+  let dfs (t : t) vs =
+    let visited = Vertex.Hash_set.create ~size:(Map.length t.outgoing) () in
     let rec loop = function
       | [] -> []
       | v :: vs ->
@@ -78,10 +89,19 @@ module Make (Vertex : Vertex) = struct
     in
     loop vs
 
-  let wcc t = dfs t (vertices t)
+  let wcc (t : t) = dfs t (vertices t)
 
-  let scc t = transpose t |> wcc |> Forest.post_order |> List.rev |> dfs t |> List.rev
+  let scc t =
+    transpose t
+    |> wcc
+    |> Forest.post_order
+    |> List.rev
+    |> dfs t
+    |> List.rev
 
-  let topo_sort t = scc t |> List.map ~f:Tree.pre_order |> List.concat
+  let topo_sort t =
+    scc t
+    |> List.map ~f:Tree.pre_order
+    |> List.concat
 
 end
