@@ -48,7 +48,7 @@ module Make (Vertex : Vertex) = struct
     incoming : Vertex.t list Vertex.Map.t;
   }
 
-  let vertices (t : t) : Vertex.t list = Map.keys t.outgoing
+  let vertices t = Map.keys t.outgoing
 
   let edges t =
     let open List.Monad_infix in
@@ -72,10 +72,10 @@ module Make (Vertex : Vertex) = struct
     outgoing = t.incoming;
   }
 
-  let outgoing t v : Vertex.t list = Option.value ~default:[] (Map.find t.outgoing v)
-  let incoming t v : Vertex.t list = Option.value ~default:[] (Map.find t.incoming v)
+  let outgoing t v = Option.value ~default:[] (Map.find t.outgoing v)
+  let incoming t v = Option.value ~default:[] (Map.find t.incoming v)
 
-  let dfs (t : t) vs =
+  let dfs t vs =
     let visited = Vertex.Hash_set.create ~size:(Map.length t.outgoing) () in
     let rec loop = function
       | [] -> []
@@ -92,7 +92,7 @@ module Make (Vertex : Vertex) = struct
     in
     loop vs
 
-  let wcc (t : t) = dfs t (vertices t)
+  let wcc t = dfs t (vertices t)
 
   let scc t =
     transpose t
