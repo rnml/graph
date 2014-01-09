@@ -1,12 +1,6 @@
 open Core.Std
 
-module type Vertex = sig
-  type t
-  include Comparable.S with type t := t
-  include Hashable.S with type t := t
-end
-
-module Make (Vertex : Vertex) : sig
+module Make (Vertex : Hashable) : sig
 
   module Edge : sig
     type t = {

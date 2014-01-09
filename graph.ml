@@ -1,16 +1,10 @@
 open Core.Std
 
-module type Vertex = sig
-  type t
-  include Comparable.S with type t := t
-  include Hashable.S with type t := t
-end
-
 (* The algorithms here were lifted from
    "Lazy depth first search and Linear Graph Algorithms in Haskell"
    by King and Launchbury *)
 
-module Make (Vertex : Vertex) = struct
+module Make (Vertex : Hashable) = struct
 
   module Edge = struct
     type t = {
@@ -27,7 +21,7 @@ module Make (Vertex : Vertex) = struct
     val post_order_aux : 'a t -> 'a list -> 'a list
   end = struct
     type 'a t = Node of 'a * 'a Forest.t
-    let pre_order  (Node (x, f)) = x :: Forest.pre_order f
+    let pre_order (Node (x, f)) = x :: Forest.pre_order f
     let post_order_aux (Node (x, f)) acc = Forest.post_order_aux f (x :: acc)
     let post_order ts = post_order_aux ts []
   end
@@ -39,7 +33,7 @@ module Make (Vertex : Vertex) = struct
     val post_order_aux : 'a t -> 'a list -> 'a list
   end = struct
     type 'a t = 'a Tree.t list
-    let pre_order  ts = List.concat_map ts ~f:Tree.pre_order
+    let pre_order ts = List.concat_map ts ~f:Tree.pre_order
     let post_order_aux ts acc = List.fold_right ts ~f:Tree.post_order_aux ~init:acc
     let post_order ts = post_order_aux ts []
   end
