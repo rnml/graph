@@ -94,17 +94,8 @@ module Make (Vertex : Vertex) = struct
 
   let wcc t = dfs t (vertices t)
 
-  let scc t =
-    transpose t
-    |> wcc
-    |> Forest.post_order
-    |> List.rev
-    |> dfs t
-    |> List.rev
+  let scc t = transpose t |> wcc |> Forest.post_order |> List.rev |> dfs t |> List.rev
 
-  let topo_sort t =
-    scc t
-    |> List.map ~f:Tree.pre_order
-    |> List.concat
+  let topo_sort t = scc t |> List.map ~f:Tree.pre_order |> List.concat
 
 end
