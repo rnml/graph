@@ -87,9 +87,9 @@ module Make (Vertex : Hashable) = struct
     in
     loop vs
 
-  let wcc t = dfs t (vertices t)
+  let dff t = dfs t (vertices t)
 
-  let scc t = transpose t |> wcc |> Forest.post_order |> List.rev |> dfs t |> List.rev
+  let scc t = transpose t |> dff |> Forest.post_order |> List.rev |> dfs t |> List.rev
 
   let topo_sort t = scc t |> List.map ~f:Tree.pre_order |> List.concat
 

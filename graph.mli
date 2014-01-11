@@ -44,8 +44,8 @@ module Make (Vertex : Hashable) : sig
   (* depth first seach from a start set *)
   val dfs : t -> Vertex.t list -> Vertex.t Forest.t
 
-  (* weakly connected components *)
-  val wcc : t -> Vertex.t Forest.t
+  (* depth first forest *)
+  val dff : t -> Vertex.t Forest.t
 
   (* strongly connected components *)
   val scc : t -> Vertex.t Forest.t
