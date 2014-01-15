@@ -53,4 +53,13 @@ module Make (Vertex : Hashable) : sig
   (* topological sort *)
   val topo_sort : t -> Vertex.t list
 
+  (* edge union *)
+  val union : t -> t -> t
+
+  (* add an edge [w -> v] for every edge [v -> w] *)
+  val undirected : t -> t
+
+  (* weakly connected components *)
+  val wcc : t -> Vertex.t Forest.t
+
 end

@@ -92,5 +92,24 @@ module Make (Vertex : Hashable) = struct
   let scc t = transpose t |> dff |> Forest.post_order |> List.rev |> dfs t |> List.rev
 
   let topo_sort t = scc t |> List.map ~f:Tree.pre_order |> List.concat
+  let map_union m1 m2 =
+    Hashtbl.merge m1 m2 (fun ~key:_ data ->
+      Some begin
+        match data with
+        | `Left xs | `Right xs -> xs
+        | `Both (xs, ys) ->
+          let set = Vertex.Hash_set.of_list xs in
+          List.iter ys ~f:(fun y -> Hash_set.add set y);
+          Hash_set.to_list set
+      end)
+
+  let union t1 t2 = {
+    outgoing = map_union t1.outgoing t2.outgoing;
+    incoming = map_union t1.incoming t2.incoming;
+  }
+
+  let undirected t = union t (transpose t)
+
+  let wcc t = dff (undirected t)
 
 end
