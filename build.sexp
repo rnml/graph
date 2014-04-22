@@ -1,0 +1,6 @@
+((packages  (core))
+ (includes  ())
+ (libraries ())
+ (syntax    (sexplib))
+ (modules   (graph std))
+ (target (lib graph_lib)))
