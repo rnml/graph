@@ -1,15 +1,17 @@
-
 ### PARAMETERS #####################################################
 
 PACKAGES=core
+INCLUDES=
+LIBRARIES=
 SYNTAX=sexplib
-MODULES=graph std
 
-B= graph_lib
+MODULES= \
+  graph \
+  std \
+
+B=graph_lib
 T=$B.cmxa
-
 FOR_PACK_OPT=-for-pack Graph_lib
-
 ### RULES ##########################################################
 
 SYNTAX_PACKAGES=$(addsuffix .syntax, $(SYNTAX))
@@ -23,17 +25,15 @@ ifdef SYNTAX
   endif
 endif
 
-OCAMLOPT_FLAGS=\
-  $(FIND_OPTS) \
-  -thread \
-  -linkpkg \
-  -w YSPUZF \
-  -warn-error YSPUZ
+OCAMLOPT_FLAGS=$(FIND_OPTS) -thread -linkpkg -w YSPUZF -warn-error YSPUZ
 
-OCAMLOPT=ocamlfind ocamlopt
+OCAMLC=ocamlfind ocamlc $(INCLUDES)
+OCAMLOPT=ocamlfind ocamlopt $(INCLUDES)
 OCAMLDEP=ocamlfind ocamldep
 OCAMLYACC=ocamlfind ocamlyacc
 OCAMLLEX=ocamlfind ocamllex -q
+
+LIB_FILES=$(addsuffix .cmxa, $(LIBRARIES))
 
 all: init $T
 	@echo done
@@ -53,8 +53,14 @@ $B.cmo: $(OBJECTS)
 std.cmx: std.ml
 	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(FOR_PACK_OPT) -c std.ml
 
+std_internal.cmo: std_internal.ml
+	$(OCAMLC) $(OCAMLOPT_FLAGS) -c std_internal.ml
+
+std_internal.cmx: std_internal.ml
+	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(FOR_PACK_OPT) -c std_internal.ml
+
 %.exe: $(OBJECTS)
-	$(OCAMLOPT) -thread $(addprefix -package , $(PACKAGES)) -linkpkg $(OBJECTS) -o $*.exe
+	$(OCAMLOPT) -thread $(addprefix -package , $(PACKAGES)) -linkpkg $(LIB_FILES) $(OBJECTS) -o $*.exe
 
 %.cma: %.cmo
 	$(OCAMLC) -thread -a $*.cmo -o $*.cma
